@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ProjTemplateCommon.ConfigClasses;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ProjTemplateData
 {
@@ -25,16 +27,22 @@ namespace ProjTemplateData
 
         private static IServiceCollection UseDatabaseContexts(this IServiceCollection services, IConfiguration configuration)
         {
+            ConnectionSetting connectionSetting = new ConnectionSetting() { SqlConnectionString= configuration.GetConnectionString("ProjTemplateDB") };
+            services.AddSingleton(connectionSetting);
+            
             services.AddDbContext<ProjTemplateDboContext>((svcProvider, opts) =>
             {
-                //var dbCommandInterceptor = svcProvider.GetService<ProjTemplateDboContext>();
-
-                opts.UseSqlServer(configuration.GetConnectionString("ProjTemplateDB"))
-               // .UseSnakeCaseNamingConvention() // Naming Convention
+                opts.UseSqlServer(connectionSetting.SqlConnectionString, sqlServerOptionsAction =>
+                {
+                    sqlServerOptionsAction.EnableRetryOnFailure(5,TimeSpan.FromSeconds(30),null);
+                })
                 .EnableDetailedErrors()
                 .EnableSensitiveDataLogging();
-                //.AddInterceptores(dbCommandInterceptor);
-            });
+                
+            },contextLifetime: ServiceLifetime.Scoped ,optionsLifetime: ServiceLifetime.Singleton);
+
+            services.AddScoped<ProjTemplateDboContext>();
+
             return services;
         }
     }

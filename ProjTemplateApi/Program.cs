@@ -37,6 +37,9 @@ builder.Services.AddSwaggerGen();
 
 // Configure Standard Services
 builder.Services.UseProjTemplateServices(builder.Configuration);
+builder.Services.AddCommonAuthorization(builder.Configuration);
+builder.Services.AddCommonCoreAPIAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProjTemplateCommon.ApiResponse;
+using ProjTemplateCommon.Auth;
 using ProjTemplateCommon.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -17,18 +19,13 @@ namespace ProjTemplateCommon.BaseClasses
     //[Route("api/[controller]")]
     public class CommonSecureController : ControllerBase , IDisposable
     {
-        //private TokenData _tokenData;
-        private ILogger _logger;
-        private IServiceProvider _serviceProvider;
-        public CommonSecureController(ILogger logger,IServiceProvider serviceProvider)
+        protected IHttpContextAccessor httpContextAccessor;
+        public CoreClaimsPrincipal MyPrincipal { get; set; }
+        public CommonSecureController(IHttpContextAccessor httpContextAccessor)
         {
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-        }
-        //private void WriteToLog(LogLevel logLevel, Exception ex, string additionalData)
-        //{
-
-        //}
+            this.httpContextAccessor = httpContextAccessor;
+            this.MyPrincipal = httpContextAccessor.HttpContext.User as CoreClaimsPrincipal;
+        }        
         protected virtual ApiItemResponseTyped<T> ExecuteAndConvertToApiResponse<T>(Func<T> func)
         {
             try
