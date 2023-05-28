@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using ProjTemplateCommon.Extensions;
 using ProjTemplateService;
@@ -5,6 +6,14 @@ using ProjTemplateService;
 var builder = WebApplication.CreateBuilder(args);
 
 //builder.Logging.AddConsole();
+
+// Enable ApplicationInsights Logging
+builder.Services.AddApplicationInsightsTelemetry();
+//Enable Database query monitoring in Applicatipn Insights
+builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) =>
+{
+    module.EnableSqlCommandTextInstrumentation = true;
+});
 
 // Add services to the container.
 builder.Services.AddAuthentication();
@@ -28,6 +37,9 @@ builder.Services.AddSwaggerGen();
 
 // Configure Standard Services
 builder.Services.UseProjTemplateServices(builder.Configuration);
+builder.Services.AddCommonAuthorization(builder.Configuration);
+builder.Services.AddCommonCoreAPIAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

@@ -11,7 +11,7 @@ namespace ProjTemplateApi.Controllers
     public class TestController : CommonSecureController
     {
         private readonly IProductService _productService;
-        public TestController(IProductService productService,ILogger<ProductService> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
+        public TestController(IProductService productService,IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _productService = productService;
         }

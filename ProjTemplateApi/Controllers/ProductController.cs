@@ -12,14 +12,14 @@ namespace ProjTemplateApi.Controllers
     {
         #region Private Variables
         private readonly IProductService _productService;
-        private readonly ILogger _logger;
+        
         #endregion
 
         #region Constructor
-        public ProductController(IProductService productService , ILogger<ProductService> logger , IServiceProvider serviceProvider) : base(logger , serviceProvider)   
+        public ProductController(IProductService productService , IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)   
         {
             _productService = productService;
-            _logger = logger;
+            
         }
         #endregion
 
@@ -32,7 +32,7 @@ namespace ProjTemplateApi.Controllers
         [Route("getproducts")]
         public async Task<ApiListResponseTyped<ProductDTO>> GetAllProducts()
         {
-            _logger.LogInformation("GetAllProducts Call started" + DateTime.Now);
+            //_logger.LogInformation("GetAllProducts Call started" + DateTime.Now);
             var products = await _productService.GetAllProducts();
             return ExecuteAndConvertToApiListResponse(() => { return products; });
         }

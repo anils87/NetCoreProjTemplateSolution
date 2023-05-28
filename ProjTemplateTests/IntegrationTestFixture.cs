@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using ProjTemplateCommon.Auth;
 using ProjTemplateCommon.ConfigClasses;
 using ProjTemplateCommon.Enums;
 using ProjTemplateCommon.Extensions;
@@ -11,6 +12,7 @@ using ProjTemplateCommon.Mapping;
 using ProjTemplateData;
 using ProjTemplateService;
 using ProjTemplateService.Implementations;
+using ProjTemplateTests.Helpers;
 using System.ComponentModel.Design;
 using System.Reflection;
 using System.Security.Authentication.ExtendedProtection;
@@ -35,6 +37,7 @@ namespace ProjTemplateTests
             _services = new ServiceCollection();
 
             AddDefaultServices();
+            AddMockServices();
 
             if (_useInMemoryDatabase)
             {
@@ -53,6 +56,10 @@ namespace ProjTemplateTests
             _services.AddSingleton<IConfiguration>(_config);
             _services.Configure<AppSettings>(_config.GetSection("AppSettings"));
             _services.UseProjTemplateServices(_config);
+        }
+        public void AddMockServices()
+        {
+            _services.AddSingleton<ICoreClaimsProvider, TestCoreClaimsProvider>();
         }
 
         public T GetApplicationService<T>() where T : class 
